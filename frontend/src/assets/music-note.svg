@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="black" xmlns="http://www.w3.org/2000/svg">
+  <!-- Note head -->
+  <ellipse cx="16" cy="21" rx="5" ry="4" fill="black"/>
+  <!-- Stem -->
+  <rect x="19" y="5" width="3" height="16" fill="black"/>
+  <!-- Flag -->
+  <path d="M22 5 C25 5, 26 7, 26 9 C26 11, 25 13, 22 13" stroke="black" stroke-width="2.5" fill="none"/>
+</svg> 
