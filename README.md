@@ -5,14 +5,13 @@ It combines Spotify and Setlist.fm APIs.
 Built with React, TypeScript, and Vite.
 
 This is a pet project, it has more bugs than the Amazon rainforest and there's no guarantee of fixes, updates or mainteinance :D
+
 Use it at your own risk :)
 
 ## Features
 
 - Search for artists and their setlists
 - Create Spotify playlists from setlists
-- Modern, responsive UI
-- TypeScript for type safety
 
 ## Prerequisites
 
@@ -60,7 +59,7 @@ monorepo/
      ```
    - Backend `.env`:
      ```
-     PORT=3000
+     PORT=8080
      ```
 4. Update your Spotify Developer Dashboard with the redirect URI
 
