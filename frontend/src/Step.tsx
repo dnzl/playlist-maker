@@ -61,7 +61,15 @@ export const Step = ({
     {!collapsed && (
       <Flex direction="column" gap="4" mt="5">
         {children}
-        <Box my="2" style={{ alignSelf: "end" }}>
+        <Box my="2" style={{ 
+          alignSelf: "end", 
+          position: "sticky", 
+          bottom: 0,
+          background: "linear-gradient(transparent 0, var(--color-background) 75%)",
+          padding: "4rem 1em 1em",
+          width: "100%",
+          textAlign: "end"
+        }}>
           <Button disabled={!isLastStep && !selection} onClick={goToNextStep}>
             {nextButtonTitle} <ChevronRightIcon />
           </Button>
