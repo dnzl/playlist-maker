@@ -46,6 +46,7 @@ export const SongSelector = ({
           Select live versions
         </Button>
       </Flex>
+      {isLoading && <div>Loading...</div>}
       {songs.map((song, i) => (
         <Card key={`song-list-${i}`} mb="6">
           <SongItem

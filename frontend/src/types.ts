@@ -15,4 +15,7 @@ export type SelectedTrack = {
 
 export type PlaylistSelection =
   | { type: "new"; name: string }
-  | { type: "existing"; selection?: SpotifyPlaylist };
+  | { type: "existing"; selection?: AllConditionalExceptFor<SpotifyPlaylist, "id" | "name"> };
+
+type AllConditionalExceptFor<T, K extends keyof T> = Pick<T, K> &
+  Partial<Pick<T, Exclude<keyof T, K>>>;

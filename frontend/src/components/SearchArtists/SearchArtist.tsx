@@ -44,6 +44,7 @@ export const SearchArtist = ({
           </Flex>
         </form>
       </Box>
+      {isLoading && <div>Loading...</div>}
       {artists && (
         <ArtistsList
           artists={artists}

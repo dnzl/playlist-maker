@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { PlaylistSelection, TrackSelection } from "../types";
 import {
   SpotifyArtist,
@@ -11,15 +11,19 @@ type UseSetlistCreatorParams = {
   selectedTracks?: TrackSelection;
   selectedPlaylist?: PlaylistSelection;
   selectedArtist?: SpotifyArtist;
+  onCreatePlaylistSuccess: (playlistId: string) => void;
 };
 
 export const useSetlistCreator = ({
   selectedTracks,
   selectedPlaylist,
   selectedArtist,
+  onCreatePlaylistSuccess,
 }: UseSetlistCreatorParams) => {
-  const [createPlaylistMutation] = useCreatePlaylistMutation();
+  const [createPlaylistMutation, { isLoading: createPlaylistIsLoading }] =
+    useCreatePlaylistMutation();
   const [addTracksToPlaylistMutation] = useAddTracksToPlaylistMutation();
+  const [isCreatingPlaylist, setIsCreatingPlaylist] = useState(createPlaylistIsLoading);
 
   const selectedTracksIds = useMemo(
     () =>
@@ -50,6 +54,7 @@ export const useSetlistCreator = ({
   const createPlaylist = useCallback(async () => {
     console.log("createPlaylist", { selectedTracksIds, selectedPlaylist, selectedArtist });
     try {
+      setIsCreatingPlaylist(true);
       const userId = getCurrentUserId();
       if (!userId) {
         console.error("User ID not available");
@@ -90,8 +95,7 @@ export const useSetlistCreator = ({
         // Use existing playlist
         playlistId = selectedPlaylist.selection.id;
       } else {
-        console.error("No playlist selected");
-        return;
+        throw new Error("No playlist selected");
       }
 
       // Add tracks to the playlist
@@ -106,8 +110,11 @@ export const useSetlistCreator = ({
           trackCount: trackURIs.length,
         });
       }
+      setIsCreatingPlaylist(false);
+      onCreatePlaylistSuccess(playlistId);
     } catch (error) {
       console.error("Error creating playlist:", error);
+      setIsCreatingPlaylist(false);
     }
   }, [
     selectedTracksIds,
@@ -115,10 +122,12 @@ export const useSetlistCreator = ({
     selectedArtist,
     createPlaylistMutation,
     addTracksToPlaylistMutation,
+    setIsCreatingPlaylist,
   ]);
 
   return {
     createPlaylist,
+    isCreatingPlaylist,
     songSelection: {
       value: selectedTracksIds.join(","),
       name: `${selectedTracksIds.length} songs`,
