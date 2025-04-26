@@ -12,6 +12,7 @@ import { Summary } from "./components/Summary";
 import { getCurrentUserId, setCurrentUserId, SpotifyArtist, useGetCurrentUserQuery } from "./app/spotifyService";
 import { CheckCircledIcon } from "@radix-ui/react-icons";
 import { useTokenRefresh } from "./hooks/useTokenRefresh";
+import { ErrorMessage } from "./components/common/ErrorMessage";
 
 enum STEPS {
   CHOOSE_SERVICE = 1,
@@ -121,13 +122,13 @@ export const PlaylistMakerApp = () => {
             onChange={setSelectedTracks}
           />
         ) : (
-          <>Error: select an artist first</>
+          <ErrorMessage message="Error: select an artist first" />
         )}
       </Step>
       <Step
         step={STEPS.CHOOSE_PLAYLIST}
         title="Choose a Playlist"
-          collapsed={currentStep !== STEPS.CHOOSE_PLAYLIST}
+        collapsed={currentStep !== STEPS.CHOOSE_PLAYLIST}
         goToNextStep={goToNextStep}
         changeSelection={() => goToStep(STEPS.CHOOSE_PLAYLIST)}
         selection={playlistSelection}

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { PlaylistSelection } from "../../types";
 import { PlaylistsList } from "./PlaylistList";
 import { SpotifyPlaylist, useGetPlaylistsQuery } from "../../app/spotifyService";
+import { ErrorMessage } from "../common/ErrorMessage";
 
 type PlaylistChooserProps = {
   selection: PlaylistSelection;
@@ -13,7 +14,7 @@ export const PlaylistChooser = ({
   onChange,
   selection,
 }: PlaylistChooserProps) => {
-  const { data, isLoading } = useGetPlaylistsQuery(null, {
+  const { data, isLoading, isError } = useGetPlaylistsQuery(null, {
     skip: selection.type !== "existing",
   });
 
@@ -70,7 +71,9 @@ export const PlaylistChooser = ({
           />
         </Flex>
       ) : (
-        isLoading ? (
+        isError ? (
+          <ErrorMessage message="Error loading playlists" />
+        ) : isLoading ? (
           <Text>Loading playlists...</Text>
         ) : playlists.length > 0 ? (
           <PlaylistsList

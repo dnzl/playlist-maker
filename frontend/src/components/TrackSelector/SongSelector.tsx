@@ -1,10 +1,16 @@
 import { Box, Button, Card, Flex } from "@radix-ui/themes";
 import { SelectedTrack, TrackSelection } from "../../types";
 import { SongItem } from "./SongItem";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useGetSongsByArtistQuery } from "../../app/setlistService";
 import { SpotifyArtist } from "../../app/spotifyService";
-// import SpotifyTrackList from "./SpotifyTrackList";
+import { ErrorMessage } from "../common/ErrorMessage";
+
+type ErrorData = {
+  data: {
+    error: string;
+  };
+};
 
 type SongSelectorProps = {
   artist: SpotifyArtist;
@@ -17,16 +23,15 @@ export const SongSelector = ({
   onChange,
   artist,
 }: SongSelectorProps) => {
-  // TODO throw error if no artist name
   const searchValue = artist.name;
 
   const {
     data: setlistResponse,
-    isSuccess,
+    isError,
     isLoading,
+    error,
   } = useGetSongsByArtistQuery(searchValue, {
-    skip: !searchValue || searchValue.trim().length === 0,
-    refetchOnMountOrArgChange: true,
+    skip: !searchValue || searchValue.trim().length === 0
   });
 
   const songs = setlistResponse?.songs ?? [];
@@ -38,6 +43,9 @@ export const SongSelector = ({
     [onChange, selection]
   );
 
+const getErrorMessage = (error: ErrorData) => {
+  return `Error obtaining Setlist: ${error.data.error}`;
+};
 
   return (
     <Box>
@@ -47,6 +55,7 @@ export const SongSelector = ({
         </Button>
       </Flex>
       {isLoading && <div>Loading...</div>}
+      {isError && <ErrorMessage message={getErrorMessage(error as ErrorData)} />}
       {songs.map((song, i) => (
         <Card key={`song-list-${i}`} mb="6">
           <SongItem

@@ -4,6 +4,7 @@ import { FormEvent, useCallback, useMemo, useState } from "react";
 import { BasicComponentProps } from "../../types";
 import { ArtistsList } from "./ArtistsList";
 import { SpotifyArtist, useSearchArtistQuery } from "../../app/spotifyService";
+import { ErrorMessage } from "../common/ErrorMessage";
 
 export const SearchArtist = ({
   onChange,
@@ -16,9 +17,8 @@ export const SearchArtist = ({
     setSearchValue(e.currentTarget.searchArtistValue.value);
   }, []);
 
-  const { data, isSuccess, isLoading } = useSearchArtistQuery(searchValue, {
-    skip: !searchValue || searchValue.trim().length === 0,
-    refetchOnMountOrArgChange: true,
+  const { data, isLoading, isError } = useSearchArtistQuery(searchValue, {
+    skip: !searchValue || searchValue.trim().length === 0
   });
 
   const artists: SpotifyArtist[] = useMemo(
@@ -44,6 +44,7 @@ export const SearchArtist = ({
           </Flex>
         </form>
       </Box>
+      {isError && <ErrorMessage message="Error loading artists" />}
       {isLoading && <div>Loading...</div>}
       {artists && (
         <ArtistsList
