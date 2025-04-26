@@ -12,7 +12,7 @@ const SCOPES = [
   "user-read-email",
 ];
 
-const authUrl = `https://accounts.spotify.com/authorize?response_type=token&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
+const authUrl = `https://accounts.spotify.com/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
   REDIRECT_URI
 )}&scope=${encodeURIComponent(SCOPES.join(" "))}`;
 

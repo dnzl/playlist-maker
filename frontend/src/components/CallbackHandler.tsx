@@ -1,21 +1,31 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGetTokensMutation, storeTokens } from "../app/spotifyService";
 
 const CallbackHandler = () => {
   const navigate = useNavigate();
+  const [getTokens] = useGetTokensMutation();
 
   useEffect(() => {
-    const hash = window.location.hash;
-    const params = new URLSearchParams(hash.substring(1)); // Remove the '#' and parse the query string
-    const accessToken = params.get("access_token");
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
 
-    if (accessToken) {
-      localStorage.setItem("spotify_access_token", accessToken);
-      navigate("/"); // Redirect to the main page
+    if (code) {
+      getTokens(code)
+        .unwrap()
+        .then((tokens) => {
+          storeTokens(tokens);
+          navigate("/");
+        })
+        .catch((error) => {
+          console.error("Error getting tokens:", error);
+          navigate("/");
+        });
     } else {
-      console.error("Access token not found in URL hash");
+      console.error("Authorization code not found in URL");
+      navigate("/");
     }
-  }, [navigate]);
+  }, [navigate, getTokens]);
 
   return <div>Logging in...</div>;
 };

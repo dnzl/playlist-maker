@@ -11,6 +11,7 @@ import { PlaylistChooser } from "./components/PlaylistChooser/PlaylistChooser";
 import { Summary } from "./components/Summary";
 import { getCurrentUserId, setCurrentUserId, SpotifyArtist, useGetCurrentUserQuery } from "./app/spotifyService";
 import { CheckCircledIcon } from "@radix-ui/react-icons";
+import { useTokenRefresh } from "./hooks/useTokenRefresh";
 
 enum STEPS {
   CHOOSE_SERVICE = 1,
@@ -22,6 +23,7 @@ enum STEPS {
 }
 
 export const PlaylistMakerApp = () => {
+  useTokenRefresh();
   const token = localStorage.getItem("spotify_access_token") || null;
   const {
     data: currentUser,
@@ -141,11 +143,11 @@ export const PlaylistMakerApp = () => {
         isLastStep
       >
         {isCreatingPlaylist && <div>Creating playlist...</div>}
-        {selectedTracks && (
+        {Object.keys(songSelection).length > 0 && (
           <Summary
             selectedPlaylist={selectedPlaylist}
             goToStep={goToStep}
-            selectedTracks={selectedTracks}
+            selectedTracks={songSelection}
           />
         )}
       </Step>

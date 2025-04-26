@@ -110,6 +110,16 @@ export const setCurrentUserId = (userId: string) => {
 
 export const getCurrentUserId = () => currentUserId;
 
+const CLIENT_ID = import.meta.env.VITE_SPOTIFY_CLIENT_ID;
+const CLIENT_SECRET = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET;
+const REDIRECT_URI = import.meta.env.VITE_SPOTIFY_REDIRECT_URI;
+
+type TokenResponse = {
+  access_token: string;
+  refresh_token: string;
+  expires_in: number;
+};
+
 // Define a service using a base URL and expected endpoints
 export const spotifyApi = createApi({
   reducerPath: "spotifyApi",
@@ -153,6 +163,35 @@ export const spotifyApi = createApi({
     getCurrentUser: builder.query<SpotifyUser, void>({
       query: () => "me",
     }),
+    getTokens: builder.mutation<TokenResponse, string>({
+      query: code => ({
+        url: "https://accounts.spotify.com/api/token",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${btoa(`${CLIENT_ID}:${CLIENT_SECRET}`)}`,
+        },
+        body: new URLSearchParams({
+          grant_type: "authorization_code",
+          code,
+          redirect_uri: REDIRECT_URI,
+        }).toString(),
+      }),
+    }),
+    refreshToken: builder.mutation<TokenResponse, string>({
+      query: refreshToken => ({
+        url: "https://accounts.spotify.com/api/token",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${btoa(`${CLIENT_ID}:${CLIENT_SECRET}`)}`,
+        },
+        body: new URLSearchParams({
+          grant_type: "refresh_token",
+          refresh_token: refreshToken,
+        }).toString(),
+      }),
+    }),
   }),
 });
 
@@ -163,4 +202,25 @@ export const {
   useAddTracksToPlaylistMutation,
   useGetPlaylistsQuery,
   useGetCurrentUserQuery,
+  useGetTokensMutation,
+  useRefreshTokenMutation,
 } = spotifyApi;
+
+export const storeTokens = (tokens: TokenResponse) => {
+  localStorage.setItem("spotify_access_token", tokens.access_token);
+  localStorage.setItem("spotify_refresh_token", tokens.refresh_token);
+  localStorage.setItem("spotify_token_expiry", String(Date.now() + tokens.expires_in * 1000));
+};
+
+export const getStoredTokens = () => {
+  const accessToken = localStorage.getItem("spotify_access_token");
+  const refreshToken = localStorage.getItem("spotify_refresh_token");
+  const expiry = localStorage.getItem("spotify_token_expiry");
+  return { accessToken, refreshToken, expiry };
+};
+
+export const clearTokens = () => {
+  localStorage.removeItem("spotify_access_token");
+  localStorage.removeItem("spotify_refresh_token");
+  localStorage.removeItem("spotify_token_expiry");
+};
