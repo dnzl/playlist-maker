@@ -1,5 +1,5 @@
-import { RadioCards, Flex, Text, Avatar, Link } from "@radix-ui/themes";
-import { useCallback, useEffect } from "react";
+import { RadioCards, Flex, Text } from "@radix-ui/themes";
+import { useCallback } from "react";
 import { BasicComponentProps } from "../types";
 import { SpotifyLoginButton } from "./SpotifyLoginButton";
 
@@ -14,16 +14,17 @@ export const ServiceChooser = ({
     [onChange]
   );
 
-  const isLoggedIn = !!localStorage.getItem("spotify_access_token");
-
   return (
     <>
+    <Text>
+      At the moment only Spotify is supported
+    </Text>
       <RadioCards.Root
         defaultValue={selection?.value}
         onValueChange={handleOnChange}
         columns={{ initial: "1", sm: "3" }}
       >
-        <RadioCards.Item value="none">
+        <RadioCards.Item value="none" disabled>
           <Flex direction="column" width="100%">
             <Text weight="bold">No service</Text>
             <Text>I only want to see the setlist</Text>
@@ -41,18 +42,11 @@ export const ServiceChooser = ({
           </Flex>
         </RadioCards.Item>
       </RadioCards.Root>
-      {/* TODO move to own component */}
-      {selection?.value === "Spotify" &&
-        (isLoggedIn ? (
-          <Flex gap="2" align="center">
-            {/* TODO implement */}
-            <Link href="/callback">Logout from Spotify</Link>
-          </Flex>
-        ) : (
-          <div>
-            <SpotifyLoginButton />
-          </div>
-        ))}
+      {selection?.value === "Spotify" && (
+        <Flex gap="2" align="center" mt="4">
+          <SpotifyLoginButton />
+        </Flex>
+      )}
     </>
   );
 };

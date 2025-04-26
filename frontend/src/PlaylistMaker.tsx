@@ -37,7 +37,10 @@ export const PlaylistMakerApp = () => {
   }
   const isLoggedIn = !!token && !!currentUser?.id;
 
-  const [selectedService, setSelectedService] = useState<SelectionType>();
+  const [selectedService, setSelectedService] = useState<SelectionType>({
+    value: "Spotify",
+    name: "Spotify",
+  });
   const [selectedArtist, setSelectedArtist] = useState<SpotifyArtist>();
   const [selectedTracks, setSelectedTracks] = useState<TrackSelection>();
   const [selectedPlaylist, setSelectedPlaylist] = useState<PlaylistSelection>({
@@ -45,7 +48,7 @@ export const PlaylistMakerApp = () => {
     name: "",
   });
 
-  const onCreatePlaylistSuccess = useCallback((playlistId: string) => {
+  const onCreatePlaylistSuccess = useCallback(() => {
     goToStep(STEPS.SUCCESS);
     setSelectedArtist(undefined);
     setSelectedTracks(undefined);
@@ -67,7 +70,6 @@ export const PlaylistMakerApp = () => {
     setSelectedArtist(artist);
   }, []);
 
-
   useEffect(() => {
     if (isLoggedIn) {
       const userId = getCurrentUserId();
@@ -75,8 +77,6 @@ export const PlaylistMakerApp = () => {
         setCurrentUserId(currentUser.id);
       }
     }
-    // TODO fix, for some reason it doesn't update the selection in the child component
-    setSelectedService({ value: "Spotify", name: "Spotify" });
   }, [currentUser, isLoggedIn]);
 
   return (
@@ -87,7 +87,7 @@ export const PlaylistMakerApp = () => {
       <Step
         step={STEPS.CHOOSE_SERVICE}
         title="Choose a Service"
-        selection={selectedService}
+        selection={ isLoggedIn ? selectedService : undefined}
         collapsed={currentStep !== STEPS.CHOOSE_SERVICE}
         goToNextStep={goToNextStep}
         changeSelection={() => goToStep(STEPS.CHOOSE_SERVICE)}
